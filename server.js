@@ -1,6 +1,8 @@
 const e = require('express');
 const express = require('express');
 const {animals} = require('./data/animals.json');
+const fs = require('fs');
+const path = require('path');
 const PORT = process.env.PORT || 3001;
 const app = express();
 
@@ -50,8 +52,34 @@ function filterByQuery(query, animalsArray) {
   function findById(id, animalsArray) {
     const result = animalsArray.filter(animal => animal.id === id)[0];
     return result;
-  }
+  };
 
+function createNewAnimal(body, animalsArray) {
+  const animal = body;
+  animalsArray.push(animal);
+  // write animals.json file in the data subdirectory, so we used method path.join() to join the value of __dirname, which represents the directory of the file we execute the code in, with the path to animals.json
+  fs.writeFileSync(
+    path.join(__dirname, './data/animals.json'), 
+    JSON.stringify({ animals: animalsArray }, null, 2) // convert to JSON, null (doesn't edit existing data) and 2 (create white space between values) are arguments used in the method to keep the data formatted
+  );
+  return animal;
+}
+
+function validateAnimal(animal) {
+  if (!animal.name || typeof animal.name !== 'string') {
+    return false;
+  }
+  if (!animal.species || typeof animal.species !== 'string') {
+    return false;
+  }
+  if (!animal.diet || typeof animal.diet !== 'string') {
+    return false;
+  }
+  if (!animal.personalityTraits || !Array.isArray(animal.personalityTraits)) {
+    return false;
+  }
+  return true;
+}
   app.get('/api/animals', (req, res) => {
     let results = animals;
     if (req.query) {
@@ -70,9 +98,18 @@ function filterByQuery(query, animalsArray) {
   });
 
   app.post('/api/animals', (req, res) => {
-    // req.body is where our incoming content will be
-    console.log(req.body);
-    res.json(req.body);
+    // // req.body is where our incoming content will be
+    // console.log(req.body);
+    // set id based on what the next index of the array will be
+    req.body.id = animals.length.toString(); // length property will always be 1 number ahead of the last index
+
+    // if any data in req.body is incorrect, send 400 error back
+    if (!validateAnimal(req.body)) {
+      res.status(400).send('The animal is not properly formatted.'); // a response method to relay a message to the client making the request '400 means user error'
+    } else {
+      const animal = createNewAnimal(req.body, animals);
+      res.json(animal);
+    }
   });
 
 app.listen(3001, () => {
