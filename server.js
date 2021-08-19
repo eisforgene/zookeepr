@@ -4,6 +4,11 @@ const {animals} = require('./data/animals.json');
 const PORT = process.env.PORT || 3001;
 const app = express();
 
+// parse incoming string or array data
+app.use(express.urlencoded({ extended: true })); // app.use mounts a function to the server that our requests will pass through before getting to the endpoint (middleware)
+// parse incoming JSON data
+app.use(express.json()); 
+
 function filterByQuery(query, animalsArray) {
     let personalityTraitsArray = [];
     // Note that we save the animalsArray as filteredResults here:
