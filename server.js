@@ -64,6 +64,12 @@ function filterByQuery(query, animalsArray) {
     }
   });
 
+  app.post('/api/animals', (req, res) => {
+    // req.body is where our incoming content will be
+    console.log(req.body);
+    res.json(req.body);
+  });
+
 app.listen(3001, () => {
     console.log(`API server now on port ${PORT}!`);
 });
