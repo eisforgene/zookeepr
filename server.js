@@ -10,6 +10,7 @@ const app = express();
 app.use(express.urlencoded({ extended: true })); // app.use mounts a function to the server that our requests will pass through before getting to the endpoint (middleware)
 // parse incoming JSON data
 app.use(express.json()); 
+app.use(express.static('public')); // middleware that provides a filepath to a location in our application (public folder)
 
 function filterByQuery(query, animalsArray) {
     let personalityTraitsArray = [];
@@ -111,6 +112,10 @@ function validateAnimal(animal) {
       res.json(animal);
     }
   });
+
+app.get('/', (req, res) => { // '/' root route of the server - creates homepage
+  res.sendFile(path.join(__dirname, './public/index.html'));
+});
 
 app.listen(3001, () => {
     console.log(`API server now on port ${PORT}!`);
