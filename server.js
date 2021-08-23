@@ -117,6 +117,18 @@ app.get('/', (req, res) => { // '/' root route of the server - creates homepage
   res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
+app.get('/animals', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+app.get('/zookeepers', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
 app.listen(3001, () => {
     console.log(`API server now on port ${PORT}!`);
 });
